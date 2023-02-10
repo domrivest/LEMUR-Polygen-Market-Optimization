@@ -112,9 +112,12 @@ axes.barh(dfNPV['sensiVariable'], column1, color='white', zorder=2)
 axes.barh(dfNPV['sensiVariable'], column0, color='lightseagreen', zorder=1)
 axes.axvline(refNPV, ls='--', zorder=3)
 axes.set_title('NPV sensitivity range for the major resources')
-axes.set_xlabel('NPV [CAD]')
-
+axes.set_xlabel('NPV [MCAD]')
 axes.set_xlim([10000000, 26000000])
+ticks = axes.get_xticks()/10**6 # Conversion en MCAD
+axes.set_xticklabels(ticks) # Conversion en MCAD
+
+
 
 plt.show()
 

@@ -13,6 +13,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.ticker import NullFormatter
 from matplotlib.dates import MonthLocator, DateFormatter
+import matplotlib.ticker as tick
 from datetime import datetime, timedelta
 
 
@@ -180,6 +181,7 @@ if showPLT == 1:
     plt.title("Greenhouse heat demand from TRNSYS model")
     ax = plt.gca()
     # formatters' options
+
     ax.xaxis.set_major_locator(MonthLocator())
     ax.xaxis.set_minor_locator(MonthLocator(bymonthday=15))
     ax.xaxis.set_major_formatter(NullFormatter())
@@ -199,34 +201,43 @@ if showPLT == 1:
     ax = df_optimalValuesTotal.plot("nominalPower", ['ElecRevenue', 'MeOHRevenue', 'H2Revenue', 'BiomassCost', 'MeOHCostIn', 'Fixed OPEX'], 'bar',
     stacked=True,
     xlabel = 'Nominal polygeneration system power [kW]',
-    ylabel = 'Cash flow [CAD]',
+    ylabel = 'Cash flow [MCAD]',
     title = 'Annual polygeneration system cash flows against \n system power in the baseline market scenario (2022)',
     color = colorMapCashFlow,
     grid = True
     )
+    ax.yaxis.offsetText.set_fontsize(12)
+    plt.xticks(fontsize = 12)
+    plt.yticks(fontsize = 12)
     ax.bar(df_optimalValuesTotal['nominalPower'], df_optimalValuesTotal['Annual cash flow sum'], color='black', width=0.25)
     ax.legend(['Electricity', 'MeOH', 'Hydrogen', 'Biomass', 'MeOH (peaking burner)', 'Fixed OPEX', 'Annual cash flow sum'])
-    # Ajout des valeurs en bout de barre
+    ticks = ax.get_yticks()/10**6 # Conversion en MCAD
+    ax.set_yticklabels(ticks) # Conversion en MCAD
     for i in range(len(df_optimalValuesTotal['nominalPower'])):
         if df_optimalValuesTotal['Annual cash flow sum'][i] <= 0:
-            ax.annotate(str(int(round(df_optimalValuesTotal['Annual cash flow sum'][i], -4))), xy=(df_optimalValuesTotal['nominalPower'][i],df_optimalValuesTotal['Annual cash flow sum'][i]), ha='center', va='top')
+            ax.annotate(str(round(df_optimalValuesTotal['Annual cash flow sum'][i], -4)/10**6), xy=(df_optimalValuesTotal['nominalPower'][i],df_optimalValuesTotal['Annual cash flow sum'][i]), ha='center', va='top')
         else:
-            ax.annotate(str(int(round(df_optimalValuesTotal['Annual cash flow sum'][i], -4))), xy=(df_optimalValuesTotal['nominalPower'][i],df_optimalValuesTotal['Annual cash flow sum'][i]), ha='center', va='bottom')
+            ax.annotate(str(round(df_optimalValuesTotal['Annual cash flow sum'][i], -4)/10**6), xy=(df_optimalValuesTotal['nominalPower'][i],df_optimalValuesTotal['Annual cash flow sum'][i]), ha='center', va='bottom')
 
     # Annual cash flows (combustion)
     ax = df_optimalValuesTotalCombustion.plot("nominalPower", ['BiomassCost', 'PropaneCost', 'CO2Cost', 'Fixed OPEX'], 'bar',
     stacked=True,
     xlabel = 'Nominal combustion system power [kW]',
-    ylabel = 'Cash flow [CAD]',
+    ylabel = 'Cash flow [MCAD]',
     title = 'Annual combustion-based system cash flows \n against system power (2022)',
     color = colorMapCashFlowCombustion,
     grid = True
     )
+    ax.yaxis.offsetText.set_fontsize(12)
+    plt.xticks(fontsize = 12)
+    plt.yticks(fontsize = 12)
     ax.bar(df_optimalValuesTotalCombustion['nominalPower'], df_optimalValuesTotalCombustion['Annual cash flow sum'], color='black', width=0.25)
     ax.legend(['Biomass', 'Propane (peaking burner)', 'CO2', 'Fixed OPEX', 'Annual cash flow sum'])
+    ticks = ax.get_yticks()/10**6 # Conversion en MCAD
+    ax.set_yticklabels(ticks) # Conversion en MCAD
     # Ajout des valeurs en bout de barre
     for i in range(len(df_optimalValuesTotalCombustion['nominalPower'])):
-        ax.annotate(str(int(round(df_optimalValuesTotalCombustion['Annual cash flow sum'][i], -4))), xy=(df_optimalValuesTotalCombustion['nominalPower'][i],df_optimalValuesTotalCombustion['Annual cash flow sum'][i]-5000), ha='center', va='top')
+        ax.annotate(str(round(df_optimalValuesTotalCombustion['Annual cash flow sum'][i], -4)/10**6), xy=(df_optimalValuesTotalCombustion['nominalPower'][i],df_optimalValuesTotalCombustion['Annual cash flow sum'][i]-5000), ha='center', va='top')
 
     # Polygeneration 8000 kW system operation (MeOHIn, Biomass, Heat demand)
     
@@ -247,15 +258,15 @@ if showPLT == 1:
                 'Electricity production'
         ])
 
-    # Biomass boiler 5200 kW system operation (Propane, Biomass, Heat demand)
+    # Biomass boiler 2600 kW system operation (Propane, Biomass, Heat demand)
     
-    ax = df_optimalValuesCombustion[3].plot(
+    ax = df_optimalValuesCombustion[1].plot(
         'Unnamed: 0',
         ["Heat demand (kWh)", "Biomass", "Propane"],
         xlabel='Time steps [15 minutes]',
         ylabel='Energy [kWh]',
         color=['darkslategray', 'forestgreen', 'bisque'],
-        title="Annual greenhouse heat demand and biomass consumption for the 5200 kW boiler system"
+        title="Annual greenhouse heat demand and biomass consumption for the 2600 kW boiler system"
         )
     ax.legend([
                 'Greenhouse heat demand',
@@ -277,12 +288,15 @@ if showPLT == 1:
         'bar',
         color = blues,
         xlabel='Year',
-        ylabel='Cumulative NPV [CAD]',
+        ylabel='Cumulative NPV [MCAD]',
         title='Cumulative NPV system life - Polygeneration',
         grid=True
     )
-    
-    ax.ticklabel_format(style='sci', axis='y')
+    ax.yaxis.offsetText.set_fontsize(12)
+    plt.xticks(fontsize = 12)
+    plt.yticks(fontsize = 12)
+    ticks = ax.get_yticks()/10**6 # Conversion en MCAD
+    ax.set_yticklabels(ticks) # Conversion en MCAD
     ax.legend([
         '1600 kW',
         '3200 kW',
@@ -306,11 +320,15 @@ if showPLT == 1:
         'bar',
         color = blues,
         xlabel='Year',
-        ylabel='Cumulative NPV [CAD]',
+        ylabel='Cumulative NPV [MCAD]',
         title='Cumulative NPV through system life - Biomass boiler',
         grid=True
     )
-
+    ax.yaxis.offsetText.set_fontsize(12)
+    plt.xticks(fontsize = 12)
+    plt.yticks(fontsize = 12)
+    ticks = ax.get_yticks()/10**6 # Conversion en MCAD
+    ax.set_yticklabels(ticks) # Conversion en MCAD
     ax.legend([
         '1300 kW',
         '2600 kW',
@@ -330,12 +348,13 @@ if showPLT == 1:
     stacked=True,
     color=['cornflowerblue', 'darkorange'],
     xlabel='Discount rate [%]',
-    ylabel='Cumulative NPV [CAD]',
+    ylabel='Cumulative NPV [MCAD]',
     grid=True,
     title="Cumlative NPV against discount rate"
     )
     ax.legend(['8000 kW polygeneration system', '5200 kW combustion-based system'])
-
+    ticks = ax.get_yticks()/10**6 # Conversion en MCAD
+    ax.set_yticklabels(ticks) # Conversion en MCAD
     
     plt.show()
 

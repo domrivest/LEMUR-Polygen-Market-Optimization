@@ -165,14 +165,19 @@ dataHigh = dfNPV.iloc[idxHigh]['Cumulative NPV']
 fig, ax = plt.subplots()
 sns.boxplot([dataLow, dataMedian, dataHigh],
 palette='Blues').set(title='Cumulative NPV distribution for the three hydrogen market scenarios')
-ax.set_xticklabels(['Low hydrogen price', 'Median hydrogen price', 'High hydrogen price'], rotation=0, fontsize=8)
+ax.set_xticklabels(['Low hydrogen price', 'Baseline hydrogen price', 'High hydrogen price'], rotation=0, fontsize=8)
 ax.axes.grid(True)
 ax.axes.set_xlabel('Hydrogen market scenario')
-ax.axes.set_ylabel('Cumulative NPV [CAD]')
+ax.axes.set_ylabel('Cumulative NPV [MCAD]')
+ticks = ax.get_yticks()/10**6 # Conversion en MCAD
+ax.set_yticklabels(ticks) # Conversion en MCAD
+ax.yaxis.offsetText.set_fontsize(12)
+plt.xticks(fontsize = 12)
+plt.yticks(fontsize = 12)
 
 plt.figure()
-columns = ['Low methanol', 'Median methanol', 'High methanol']
-rows = ['Low electricity', 'Median electricity', 'High electricity']
+columns = ['Low methanol', 'Baseline methanol', 'High methanol']
+rows = ['Low electricity', 'Baseline electricity', 'High electricity']
 LowH2NPV = [[dfNPV.iloc[dfNPV.index[dfNPV['SeriesOpti']=='eLmLh2L']]['Cumulative NPV'].iloc[0], \
     dfNPV.iloc[dfNPV.index[dfNPV['SeriesOpti']=='eLmMh2L']]['Cumulative NPV'].iloc[0], \
         dfNPV.iloc[dfNPV.index[dfNPV['SeriesOpti']=='eLmHh2L']]['Cumulative NPV'].iloc[0]], \
@@ -183,9 +188,12 @@ LowH2NPV = [[dfNPV.iloc[dfNPV.index[dfNPV['SeriesOpti']=='eLmLh2L']]['Cumulative
                             dfNPV.iloc[dfNPV.index[dfNPV['SeriesOpti']=='eHmMh2L']]['Cumulative NPV'].iloc[0], \
                                 dfNPV.iloc[dfNPV.index[dfNPV['SeriesOpti']=='eHmHh2L']]['Cumulative NPV'].iloc[0]]]
 
-dfNPVLowH2 = pd.DataFrame(LowH2NPV, columns=columns, index=rows)
-
-ax = sns.heatmap(dfNPVLowH2, annot=True, cmap='Blues', cbar_kws={'label': '[CAD]'}).set(title='Cumulative NPV distribution in low hydrogen price market scenario')
+dfNPVLowH2 = pd.DataFrame(LowH2NPV, columns=columns, index=rows)/10**6 # Conversion en MCAD
+ 
+ax = sns.heatmap(dfNPVLowH2, annot=True, cmap='Blues', cbar_kws={'label': '[MCAD]'}).set(title='Cumulative NPV distribution in low hydrogen price market scenario')
+#ax.yaxis.offsetText.set_fontsize(12)
+plt.xticks(fontsize = 12)
+plt.yticks(fontsize = 12)
 
 # Box plot IRR
 dfNPV = dfNPV.reset_index(drop=True)
@@ -196,10 +204,13 @@ dataHigh = dfNPV.iloc[idxHigh]['IRR']
 fig, ax = plt.subplots()
 sns.boxplot([dataLow*100, dataMedian*100, dataHigh*100],
 palette='Blues').set(title='IRR for the three hydrogen market scenarios')
-ax.set_xticklabels(['Low hydrogen price', 'Median hydrogen price', 'High hydrogen price'], rotation=0, fontsize=8)
+ax.set_xticklabels(['Low hydrogen price', 'Baseline hydrogen price', 'High hydrogen price'], rotation=0, fontsize=8)
 ax.axes.grid(True)
 ax.axes.set_xlabel('Hydrogen market scenario')
 ax.axes.set_ylabel('IRR [%]')
+ax.yaxis.offsetText.set_fontsize(12)
+plt.xticks(fontsize = 12)
+plt.yticks(fontsize = 12)
 
 plt.show()
 
